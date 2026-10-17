@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI Powered House Price Predictor trained on Ames Housing Dataset using Gradient Boosting Regressor (87.16% Accuracy).">
+  <title>HomIQ | AI House Price Prediction</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏠</text></svg>">
+</head>
+<body>
+
+  <!-- Background Ambient Glows -->
+  <div class="bg-glow-1"></div>
+  <div class="bg-glow-2"></div>
+
+  <div class="container">
+    
+    <!-- Navbar -->
+    <header class="navbar">
+      <a href="#" class="brand" id="brandLogo">
+        <div class="brand-icon">🏠</div>
+        <div class="brand-name">Hom<span>IQ</span></div>
+      </a>
+      <div class="nav-badges">
+        <span class="badge badge-model">
+          <span class="badge-pulse"></span>
+          GradientBoosting (87.16% R²)
+        </span>
+        <span class="badge">Ames Dataset: 79 Features</span>
+        <a href="https://github.com/kanishkverma131/https-github.com-kanishkverma131-ML-Project" target="_blank" class="badge badge-github" id="githubLink">
+          ⭐ View GitHub Repo
+        </a>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-pill">✨ Machine Learning Valuation Engine</div>
+      <h1 class="hero-title">Predict Real Estate Value with <span class="gradient-text">AI Precision</span></h1>
+      <p class="hero-desc">
+        Powered by an advanced Gradient Boosting Regressor trained on 1,460+ comprehensive residential properties. Select your parameters below or pick a preset scenario.
+      </p>
+
+      <!-- Preset Scenarios -->
+      <div class="preset-strip">
+        <span class="preset-label">Quick Scenarios:</span>
+        <button class="preset-btn" data-preset="luxury" id="presetLuxury">🏰 Luxury Villa</button>
+        <button class="preset-btn" data-preset="family" id="presetFamily">🏡 Suburban Family</button>
+        <button class="preset-btn" data-preset="starter" id="presetStarter">🏠 Starter Home</button>
+        <button class="preset-btn" data-preset="budget" id="presetBudget">🔨 Fixer-Upper</button>
+      </div>
+    </section>
+
+    <!-- Main Dashboard Grid -->
+    <main class="dashboard-grid">
+
+      <!-- Left Column: Input Form Controls -->
+      <section class="glass-card" id="formCard">
+        <div class="card-header">
+          <h2 class="card-title">
+            <span class="card-title-icon">⚙️</span> Property Configuration
+          </h2>
+          <span class="badge">Interactive Form</span>
+        </div>
+
+        <!-- Section 1: Core Quality & Age -->
+        <div class="form-section">
+          <div class="section-label">1. Build Quality & Construction Age</div>
+
+          <div class="form-group full-width slider-container" style="margin-bottom: 16px;">
+            <div class="form-label">
+              <span>Overall Material & Finish Quality</span>
+              <span class="label-value" id="qualVal">7 / 10</span>
+            </div>
+            <input type="range" min="1" max="10" value="7" class="form-range" id="overallQual">
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="yearBuilt">Year Built</label>
+              <input type="number" id="yearBuilt" class="form-input" value="2008" min="1900" max="2026">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="lotArea">Lot Area (Sq Ft)</label>
+              <input type="number" id="lotArea" class="form-input" value="9500" min="1500" max="100000" step="500">
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 2: Space & Dimensions -->
+        <div class="form-section">
+          <div class="section-label">2. Square Footage & Living Space</div>
+
+          <div class="form-group full-width slider-container" style="margin-bottom: 16px;">
+            <div class="form-label">
+              <span>Above Ground Living Area (GrLivArea)</span>
+              <span class="label-value" id="areaVal">1,950 sq ft</span>
+            </div>
+            <input type="range" min="500" max="4500" value="1950" step="50" class="form-range" id="grLivArea">
+          </div>
+
+          <div class="form-group full-width slider-container" style="margin-bottom: 16px;">
+            <div class="form-label">
+              <span>Total Basement Area (TotalBsmtSF)</span>
+              <span class="label-value" id="bsmtVal">1,100 sq ft</span>
+            </div>
+            <input type="range" min="0" max="3000" value="1100" step="50" class="form-range" id="totalBsmtSF">
+          </div>
+        </div>
+
+        <!-- Section 3: Rooms & Amenities -->
+        <div class="form-section">
+          <div class="section-label">3. Rooms & Capacity</div>
+
+          <div class="form-group" style="margin-bottom: 16px;">
+            <label class="form-label">Bedrooms (Above Ground)</label>
+            <div class="pill-group" id="bedroomPills">
+              <div class="pill-option" data-val="1">1</div>
+              <div class="pill-option" data-val="2">2</div>
+              <div class="pill-option active" data-val="3">3</div>
+              <div class="pill-option" data-val="4">4</div>
+              <div class="pill-option" data-val="5">5+</div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Full Bathrooms</label>
+              <div class="pill-group" id="bathroomPills">
+                <div class="pill-option" data-val="1">1</div>
+                <div class="pill-option active" data-val="2">2</div>
+                <div class="pill-option" data-val="3">3</div>
+                <div class="pill-option" data-val="4">4</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label">Garage Capacity (Cars)</label>
+              <div class="pill-group" id="garagePills">
+                <div class="pill-option" data-val="0">0</div>
+                <div class="pill-option" data-val="1">1</div>
+                <div class="pill-option active" data-val="2">2</div>
+                <div class="pill-option" data-val="3">3+</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Section 4: Location & Premium Features -->
+        <div class="form-section">
+          <div class="section-label">4. Location & Finishes</div>
+
+          <div class="form-group full-width" style="margin-bottom: 16px;">
+            <label class="form-label" for="neighborhood">Ames Neighborhood (Location)</label>
+            <select id="neighborhood" class="form-select">
+              <option value="NridgHt">Northridge Heights (Premium ★★★★★)</option>
+              <option value="StoneBr">Stone Brook (Luxury ★★★★★)</option>
+              <option value="NoRidge">Northridge (High-End ★★★★☆)</option>
+              <option value="Somerst">Somerset (Modern Master-Planned ★★★★☆)</option>
+              <option value="Timber">Timberland (Scenic Wooded ★★★☆☆)</option>
+              <option value="CollgCr" selected>College Creek (Prime Suburban ★★★☆☆)</option>
+              <option value="Crawfor">Crawford (Historic Charming ★★★☆☆)</option>
+              <option value="Gilbert">Gilbert (Established Residential ★★★☆☆)</option>
+              <option value="NWAmes">Northwest Ames (Mid-Town ★★☆☆☆)</option>
+              <option value="NAmes">North Ames (Standard Urban ★★☆☆☆)</option>
+              <option value="Sawyer">Sawyer (Budget Friendly ★☆☆☆☆)</option>
+              <option value="Edwards">Edwards (Affordable Starter ★☆☆☆☆)</option>
+              <option value="OldTown">Old Town (Historic Economy ★☆☆☆☆)</option>
+              <option value="MeadowV">Meadow Village (Entry Level ★☆☆☆☆)</option>
+            </select>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="kitchenQual">Kitchen Quality</label>
+              <select id="kitchenQual" class="form-select">
+                <option value="Ex">Ex - Luxury Chef Grade</option>
+                <option value="Gd" selected>Gd - Modern Upgraded</option>
+                <option value="TA">TA - Typical / Standard</option>
+                <option value="Fa">Fa - Fair / Needs Update</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label class="form-label" for="centralAir">Central Air Condition (AC)</label>
+              <select id="centralAir" class="form-select">
+                <option value="Y" selected>Yes (Full Central HVAC)</option>
+                <option value="N">No (No Central AC)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-group full-width">
+            <label class="form-label" for="fireplaces">Number of Fireplaces</label>
+            <select id="fireplaces" class="form-select">
+              <option value="0">0 Fireplaces</option>
+              <option value="1" selected>1 Fireplace</option>
+              <option value="2">2 Fireplaces</option>
+              <option value="3">3+ Fireplaces</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="form-actions">
+          <button class="btn-primary" id="predictBtn">
+            <span>⚡ Calculate AI Valuation</span>
+          </button>
+          <button class="btn-secondary" id="resetBtn">Reset</button>
+        </div>
+      </section>
+
+      <!-- Right Column: Live Sticky Valuation Card -->
+      <aside class="sticky-preview">
+        
+        <!-- Live Valuation Card -->
+        <div class="glass-card valuation-card" id="valuationCard">
+          <div class="valuation-header">
+            <span class="valuation-tag">⚡ AI Prediction Result</span>
+            <div class="currency-toggle">
+              <button class="curr-btn active" data-currency="USD" id="currUSD">$ USD</button>
+              <button class="curr-btn" data-currency="INR" id="currINR">₹ INR</button>
+            </div>
+          </div>
+
+          <div class="price-display">
+            <div class="price-main" id="predictedPrice">$ 245,000</div>
+            <div class="price-sub">
+              <span class="price-range-badge" id="priceRange">Est. Range: $230,000 - $260,000</span>
+              <span id="pricePerSqft">$125 / sq ft</span>
+            </div>
+          </div>
+
+          <!-- Property Quick Specs -->
+          <div class="property-specs">
+            <div class="spec-item">
+              <div class="spec-icon">🛏️</div>
+              <div class="spec-val" id="specBeds">3 Beds</div>
+              <div class="spec-label">Bedrooms</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">🚿</div>
+              <div class="spec-val" id="specBaths">2 Baths</div>
+              <div class="spec-label">Bathrooms</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">📐</div>
+              <div class="spec-val" id="specSqft">1,950 sq ft</div>
+              <div class="spec-label">Living Area</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">🚗</div>
+              <div class="spec-val" id="specCars">2 Garage</div>
+              <div class="spec-label">Parking</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">📅</div>
+              <div class="spec-val" id="specYear">Built 2008</div>
+              <div class="spec-label">Construction</div>
+            </div>
+            <div class="spec-item">
+              <div class="spec-icon">🛡️</div>
+              <div class="spec-val">87.16%</div>
+              <div class="spec-label">Confidence</div>
+            </div>
+          </div>
+
+          <!-- Feature Drivers Breakdown -->
+          <div class="breakdown-title">Key Valuation Drivers</div>
+
+          <div class="driver-bar-item">
+            <div class="driver-header">
+              <span class="driver-name">Overall Quality Impact</span>
+              <span class="driver-val" id="valQuality">38%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill bar-fill-1" id="barQuality" style="width: 38%;"></div>
+            </div>
+          </div>
+
+          <div class="driver-bar-item">
+            <div class="driver-header">
+              <span class="driver-name">Living Space & Area</span>
+              <span class="driver-val" id="valSize">26%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill bar-fill-2" id="barSize" style="width: 26%;"></div>
+            </div>
+          </div>
+
+          <div class="driver-bar-item">
+            <div class="driver-header">
+              <span class="driver-name">Location / Neighborhood</span>
+              <span class="driver-val" id="valLocation">22%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill bar-fill-3" id="barLocation" style="width: 22%;"></div>
+            </div>
+          </div>
+
+          <div class="driver-bar-item">
+            <div class="driver-header">
+              <span class="driver-name">Construction Age & Renovation</span>
+              <span class="driver-val" id="valAge">14%</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill bar-fill-4" id="barAge" style="width: 14%;"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Model Specs Mini Card -->
+        <div class="glass-card model-info-card">
+          <div class="card-title" style="font-size: 16px;">
+            <span>🤖</span> Model Architecture
+          </div>
+          <div class="model-stat-grid">
+            <div class="stat-box">
+              <div class="stat-num">87.16%</div>
+              <div class="stat-desc">R² Validation Score</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-num">GradientBoosting</div>
+              <div class="stat-desc">Ensemble Algorithm</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-num">1,460</div>
+              <div class="stat-desc">Trained Properties</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-num">79</div>
+              <div class="stat-desc">Evaluated Features</div>
+            </div>
+          </div>
+        </div>
+
+      </aside>
+    </main>
+
+    <!-- Technical Insights Section -->
+    <section class="insights-section">
+      <div class="section-label">PROJECT HIGHLIGHTS & ARCHITECTURE</div>
+      <div class="insights-grid">
+        <div class="insight-card">
+          <div class="insight-icon">📊</div>
+          <h3 class="insight-title">Advanced Feature Imputation</h3>
+          <p class="insight-desc">
+            Cleaned and processed 79 columns. Missing values in categories like Garage, Basement, and LotFrontage were imputed through domain knowledge (median & constant modes).
+          </p>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon">🏆</div>
+          <h3 class="insight-title">9 Regression Models Evaluated</h3>
+          <p class="insight-desc">
+            Compared Linear Regression, SVR, Random Forest, XGBoost, and Decision Trees using K-Fold Cross Validation. Gradient Boosting Regressor emerged as top performer.
+          </p>
+        </div>
+        <div class="insight-card">
+          <div class="insight-icon">📦</div>
+          <h3 class="insight-title">Exported Pickle Deployment</h3>
+          <p class="insight-desc">
+            The trained ensemble model is serialized in <code style="color: #a5b4fc;">gbr.pkl</code>, ready for integration into Flask/FastAPI REST microservices and production apps.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>
+        <strong>HomIQ</strong> - House Price Prediction AI Project | Designed for SlashMark Internship
+      </p>
+      <p style="margin-top: 6px;">
+        Repository: <a href="https://github.com/kanishkverma131/https-github.com-kanishkverma131-ML-Project" target="_blank">kanishkverma131 / ML-Project</a>
+      </p>
+    </footer>
+
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
